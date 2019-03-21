@@ -7,8 +7,17 @@ workbook = xlwt.Workbook()
 style = xlwt.XFStyle()
 path = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
 
+def get_code(a, b):
+    # 提取字符串
+    p1 = a.split(b)
+    if len(p1) > 1:
+        p2 = p1[0].split()
+        if len(p2) > 1:
+            return p2[len(p2)-1]
+    return ''
+
 def get_cpu_info():
-    '''获取内存详情，每三秒读取一次内存值'''
+    '''获取cpu详情，每三秒读取一次cpu值'''
     i = 0
     # 抓取log
     os.popen('adb logcat -c')
@@ -25,16 +34,22 @@ def get_cpu_info():
     rt = runtime * 20
     while i < rt:
         i = i + 1
+        j = 0
         worksheet.write(i, 0, i, style)
         process = (os.popen('adb shell dumpsys cpuinfo '+ Config().get_config()['pck_name'])).readlines()
+       # print(process)
         output = process[-1]
+        if output == '\n':
+            output = process[-2]
         print(output)
         Total = output.split()[0]
-        user = output.split()[2]
-        kernel = output.split()[5]
-        iowait = output.split()[8]
-        irq = output.split()[11]
-        softirq = output.split()[14]
+        user = get_code(output, 'user')
+        kernel = get_code(output, 'kernel')
+        iowait = get_code(output, 'iowait')
+        irq = get_code(output, ' irq')
+        softirq = get_code(output, 'softirq')
+        print(Total, user, kernel, iowait, irq, softirq)
+        time.sleep(3)
         worksheet.write(i, 1, Total)
         worksheet.write(i, 2, user)
         worksheet.write(i, 3, kernel)

@@ -13,7 +13,7 @@ def get_code(a, b):
     # 提取字符串
     p1 = a.split(b)
     if len(p1) > 1:
-        p2 = p1[1].split()
+        p2 = p1[1].split(" +")
         if len(p2) > 1:
             return p2[0]
     return ''
@@ -40,6 +40,7 @@ def get_mem_info():
         i = i + 1
         worksheet.write(i, 0, i, style)
         out = os.popen("adb shell dumpsys meminfo " + Config().get_config()['pck_name']).read()
+        print(out)
         # 读取内存数值
         JavaHeap = get_code(out, 'Java Heap:')
         NativeHeap = get_code(out, "Native Heap:")
