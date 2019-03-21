@@ -1,0 +1,16 @@
+# 配置文件
+---
+dev: 721QADRG345FC
+pck_name: com.excelliance.dualaid
+activity: com.excelliance.kxqp.ui.HelloActivity
+# 性能数据保存地址,python目录要用/；log和数据以时间命名
+mem_info: "D:/perf_test/result/mem/mem_info/"
+mem_process: "D:/perf_test/result/mem/mem_process/"
+mem_back: "D:/perf_test/result/mem/mem_back/"
+
+cpu_process: "D:/perf_test/result/cpu/cpu_process/"
+cpu_info: "D:/perf_test/result/cpu/cpu_info/"
+
+start_info: "D:/perf_test/result/start/"
+flow_info: "D:/perf_test/result/flow/"
+monkey_info: "D:/perf_test/result/monkey/"
