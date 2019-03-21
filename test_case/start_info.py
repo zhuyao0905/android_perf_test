@@ -1,7 +1,6 @@
 import re
 import time
-import easygui
-from base.config import Config
+from base.config import Config,GetPath
 import xlwt
 import os
 
@@ -12,6 +11,9 @@ path = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
 def get_start_time(type):
     '''根据type的数值，选择进行back，home和冷启动的循环操作'''
     i = 0
+    # 抓取log
+    os.popen('adb logcat -c')
+    os.popen('adb logcat -v threadtime > ' + GetPath.start + '\\' + path + '.log')
     worksheet = workbook.add_sheet('MySheet3')
     worksheet.write(0, 0,'次数')
     worksheet.write(0, 1,'TotalTime')
@@ -37,7 +39,7 @@ def get_start_time(type):
         os.popen('adb shell input keyevent '+ type)
         if type == "0":
            os.popen('adb shell am force-stop ' + Config().get_config()['pck_name'])
-        workbook.save( Config().get_config()['start_info'] + path + '.xlsx')
+        workbook.save(GetPath.start + '\\' + path + '.xlsx')
 
 
 if __name__ == "__main__":

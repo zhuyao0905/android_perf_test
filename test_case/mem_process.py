@@ -2,7 +2,7 @@ import os
 import re
 import xlwt
 import time
-from base.config import Config
+from base.config import Config,GetPath
 
 workbook = xlwt.Workbook()
 style = xlwt.XFStyle()
@@ -12,6 +12,9 @@ def get_mem():
     '''查询多个进程的内存值'''
     j = 1
     i = 1
+    # 抓取log
+    os.popen('adb logcat -c')
+    os.popen('adb logcat -v threadtime > ' + GetPath.mem_process + '\\' + path + '.log')
     processSum=0
     processList=[]
     worksheet = workbook.add_sheet('MySheet2')
@@ -53,13 +56,10 @@ def get_mem():
                 processIndex = processList.index(name)
                 if processIndex != -1:
                    worksheet.write(i, processIndex+1, mem)
-            workbook.save(Config().get_config()['mem_process']+ path + '.xlsx')
+            workbook.save(GetPath.mem_process + '\\'+ path + '.xlsx')
         i = i + 1
         time.sleep(3)
-    print('The test is finished!')
 
 if __name__ == "__main__":
-    os.popen('adb logcat -c')
-    os.popen('adb logcat -v threadtime >' + Config().get_config()['mem_process'] + path + '.log')
     runtime = int(input("Please enter the test time（min）:"))
     get_mem()

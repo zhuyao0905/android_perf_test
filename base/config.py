@@ -15,5 +15,18 @@ class Config:
         else:
             raise FileNotFoundError('文件不存在！')
 
+class GetPath:
+    # 读取测试数据地址
+    BASE_PATH = os.path.split(os.path.dirname(os.path.abspath(__file__)))[0]
+    flow = os.path.join(BASE_PATH, 'result', 'flow')
+    mem_info = os.path.join(BASE_PATH, 'result', 'mem_info')
+    mem_process = os.path.join(BASE_PATH, 'result', 'mem_process')
+    mem_back = os.path.join(BASE_PATH, 'result', 'mem_back')
+    cpu_process = os.path.join(BASE_PATH, 'result', 'cpu_process')
+    cpu_info = os.path.join(BASE_PATH, 'result', 'cpu_info')
+    start = os.path.join(BASE_PATH, 'result', 'start')
+    monkey = os.path.join(BASE_PATH, 'result', 'monkey')
+
 co = Config()
 co.get_config()
+ge = GetPath()

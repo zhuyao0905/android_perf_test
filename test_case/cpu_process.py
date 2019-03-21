@@ -3,7 +3,7 @@ import re
 import xlwt
 import time
 import datetime
-from base.config import Config
+from base.config import Config,GetPath
 
 workbook = xlwt.Workbook()
 style = xlwt.XFStyle()
@@ -19,7 +19,7 @@ def get_cpu():
     worksheet.write(0, 0, '时间')
     # 抓取log
     os.popen('adb logcat -c')
-    os.popen('adb logcat -v threadtime > ' + Config().get_config()['cpu_process'] + path + '.log')
+    os.popen('adb logcat -v threadtime > ' + GetPath.cpu_process + '\\'+  path + '.log')
     contents = os.popen("adb shell ps| findstr " + Config().get_config()['pck_name']).readlines()
     rt = runtime * 20
     while i < rt:
@@ -55,7 +55,7 @@ def get_cpu():
                 processIndex = processList.index(name)
                 if processIndex != -1:
                     worksheet.write(i, processIndex + 1,cpu)
-            workbook.save(Config().get_config()['cpu_process'] + path + '.xlsx')
+            workbook.save(GetPath.cpu_process+ '\\'+  path + '.xls')
         i = i + 1
         time.sleep(3)
     print('测试完毕。')

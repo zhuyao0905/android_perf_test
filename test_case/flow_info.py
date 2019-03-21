@@ -2,7 +2,7 @@ import os
 import re
 import time
 import xlwt
-from base.config import Config
+from base.config import Config,GetPath
 
 workbook = xlwt.Workbook()
 style = xlwt.XFStyle()
@@ -13,7 +13,7 @@ def get_tcp():
     '''测试流量'''
     # 抓取log
     os.popen('adb logcat -c')
-    os.popen('adb logcat -v threadtime > ' + Config().get_config()['flow_info'] + path + '.log')
+    os.popen('adb logcat -v threadtime > ' + GetPath.flow + '\\' + path + '.log')
     '''获取应用pid'''
     content = os.popen("adb shell ps| findstr -e " + Config().get_config()['pck_name']).read()
     pid = content.split()[1]
@@ -36,13 +36,14 @@ def get_tcp():
         rcv =os.popen("adb shell cat /proc/uid_stat/" + uid + "/tcp_rcv").read().strip()
         rcv_value = int(rcv)//1024
         #print(i,snd,rcv)
+        time.sleep(1)
         print(i, snd_value, rcv_value)
         worksheet.write(i, 0, i,style)
         worksheet.write(i, 1, snd_value )
         worksheet.write(i, 2,rcv_value)
         '''每秒获取一次数据'''
-        time.sleep(1)
-        workbook.save(Config().get_config()['flow_info'] + path + '.xlsx')
+        # 数据保存地址，以Excel表格保存
+        workbook.save(GetPath.flow + '\\' + path + '.xls')
     print('测试完毕。')
 
 if __name__ == "__main__":

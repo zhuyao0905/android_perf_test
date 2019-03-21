@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 import os
 import time
-from base.config import Config
+from base.config import Config,GetPath
 import xlwt
 
 workbook = xlwt.Workbook()
@@ -18,12 +18,12 @@ def get_code(a, b):
             return p2[0]
     return ''
 
-def get_mem_info():
+def get_mem():
     '''获取内存详情，每三秒读取一次内存值'''
     i = 0
     # 抓取log
     os.popen('adb logcat -c')
-    os.popen('adb logcat -v threadtime > ' + Config().get_config()['mem_back'] + path + '.log')
+    os.popen('adb logcat -v threadtime > '+ GetPath.mem_back + '\\' + path + '.log')
     # 数据写入Excel
     worksheet = workbook.add_sheet('MySheet2')
     worksheet.write(0, 0, '次数')
@@ -71,8 +71,8 @@ def get_mem_info():
         worksheet.write(i,8, TotalSwapPss)
         time.sleep(3)
         # 数据保存地址，以Excel表格保存
-        workbook.save(Config().get_config()['mem_back'] + path +'.xls')
+        workbook.save( GetPath.mem_back + '\\' + path +'.xls')
 
 if __name__ == "__main__":
     runtime = int(input("请输入back次数:"))
-    get_mem_info()
+    get_mem()

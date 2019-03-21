@@ -1,5 +1,5 @@
 import os
-from base.config import Config
+from base.config import Config,GetPath
 import xlwt
 import time
 
@@ -12,7 +12,7 @@ def get_cpu_info():
     i = 0
     # 抓取log
     os.popen('adb logcat -c')
-    os.popen('adb logcat -v threadtime > ' + Config().get_config()['cpu_info'] + path + '.log')
+    os.popen('adb logcat -v threadtime > ' + GetPath.cpu_info + '\\' + path + '.log')
     # 数据写入Excel
     worksheet = workbook.add_sheet('MySheet2')
     worksheet.write(0, 0, '次数')
@@ -43,7 +43,7 @@ def get_cpu_info():
         worksheet.write(i, 6, softirq)
         time.sleep(3)
         # 数据保存地址，以Excel表格保存
-        workbook.save(Config().get_config()['cpu_info'] + path + '.xls')
+        workbook.save(GetPath.cpu_info + '\\'+  path + '.xls')
 
 if __name__ == "__main__":
     runtime = int(input("请输入测试时间（min）:"))

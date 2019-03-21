@@ -3,7 +3,7 @@
 import os
 import time
 import easygui
-from base.config import Config
+from base.config import Config,GetPath
 
 # 执行monkey指令
 def start_monkey():
@@ -18,7 +18,7 @@ def start_monkey():
     throttle = int(filevalues[1])
     event = int(filevalues[2])
     # log保存地址
-    path_log = Config().get_config()['monkey_info']
+    path_log = GetPath.mem_back
     run_time = time.strftime("%Y%m%d%H%M%S", time.localtime(time.time()))
     # 检测usb连接
     if 'device' in os.popen('adb devices').read().split():

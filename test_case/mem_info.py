@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 import os
 import time
-from base.config import Config
+from base.config import Config,GetPath
 import xlwt
 
 workbook = xlwt.Workbook()
@@ -23,9 +23,9 @@ def get_mem_info():
     i = 0
     # 抓取log
     os.popen('adb logcat -c')
-    os.popen('adb logcat -v threadtime > ' + Config().get_config()['mem_info'] + path + '.log')
+    os.popen('adb logcat -v threadtime > ' + GetPath.mem_info + '\\'+ path + '.log')
     # 数据写入Excel
-    worksheet = workbook.add_sheet('MySheet2')
+    worksheet = workbook.add_sheet('MySheet4')
     worksheet.write(0, 0, '次数')
     worksheet.write(0, 1, 'Total')
     worksheet.write(0, 2, 'Java Heap')
@@ -66,8 +66,9 @@ def get_mem_info():
         worksheet.write(i,7,System)
         worksheet.write(i,8, TotalSwapPss)
         time.sleep(3)
+
         # 数据保存地址，以Excel表格保存
-        workbook.save(Config().get_config()['mem_info'] + path +'.xls')
+        workbook.save(GetPath.mem_info + '\\' + path +'.xls')
 
 if __name__ == "__main__":
     runtime = int(input("请输入测试时间（min）:"))
