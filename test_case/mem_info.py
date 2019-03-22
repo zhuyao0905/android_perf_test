@@ -13,7 +13,7 @@ def get_code(a, b):
     # 提取字符串
     p1 = a.split(b)
     if len(p1) > 1:
-        p2 = p1[1].split(" +")
+        p2 = p1[1].split()
         if len(p2) > 1:
             return p2[0]
     return ''
@@ -35,12 +35,23 @@ def get_mem_info():
     worksheet.write(0, 6, 'Prinvate Other')
     worksheet.write(0, 7, 'System')
     worksheet.write(0, 8, 'TOTAL SWAP PSS')
+    # 判断应用进程是否存在
+    try:
+        content = os.popen("adb shell ps| findstr -e " + Config().get_config()['pck_name']).read()
+        pid = content.split()[1]
+    except IndexError as e:
+        print('测试应用的进程不存在,正在开启应用···')
+        # 如果不需要自动启动，可以把下面这行命令注释掉
+        os.popen('adb shell am start -W ' + Config().get_config()['pck_name']
+                 + '/' + Config().get_config()['activity'])
+
+    runtime = int(input("请输入测试时间（min）:"))
     rt = runtime * 20
     while i < rt:
         i = i + 1
         worksheet.write(i, 0, i, style)
         out = os.popen("adb shell dumpsys meminfo " + Config().get_config()['pck_name']).read()
-        print(out)
+        #print(out)
         # 读取内存数值
         JavaHeap = get_code(out, 'Java Heap:')
         NativeHeap = get_code(out, "Native Heap:")
@@ -72,5 +83,4 @@ def get_mem_info():
         workbook.save(GetPath.mem_info + '\\' + path +'.xls')
 
 if __name__ == "__main__":
-    runtime = int(input("请输入测试时间（min）:"))
     get_mem_info()

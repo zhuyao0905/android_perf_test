@@ -1,80 +1,53 @@
-# coding=utf-8
-import time
 import os
-import re
 from base.config import Config
 
-class App:
-    def __init__(self, pckName, firstActivity):
-        self.pckName = pckName
-        self.firstActivity = firstActivity
-        print('测试环境准备')
+# 未完成
+class BatteryTest(object):
 
-    def start_app(self):
-        print('启动待测应用')
-        os.popen("adb shell am start " + Config().get_config()['pck_name']
-                           + '/' + Config().get_config()['activity'])
+    # 清空手机耗电记录
+    def reset_batteryinfo(self):
+        # os.popen('adb shell dumpsys batterystats --enable full-wake-history')
+        # time.sleep(1)
+        os.popen('adb shell dumpsys batterystats --reset')
 
-    def get_uid(self):
-        content = os.popen("adb shell ps| findstr " + Config().get_config()['pck_name']).read()
-        UID = content.split()[0].replace('_', '')
-        return UID
+    # 检查usb连接状态
+    def check_usb_status(self):
+        data = os.popen('adb shell dumpsys battery').readlines()
+        for i in data:
+            if 'USB powered' in i:
+                # print(i.split()[bad_path])
+                return i.split()[2]
 
-    def reset_battery(self):
-        print('清除手机电量信息')
-        os.popen("adb shell dumpsys batterystats --reset")
+    # 设置usb连接为连接不充电状态
+    def set_usb_status(self):
+        os.popen('adb shell dumpsys battery set usb 0')
+        if self.check_usb_status() != 'false':
+            print('设置usb不充电状态失败')
 
-    def set_usb(self):
-        print('开始电量测试，请进行相关操作')
-        os.popen("adb shell dumpsys battery unplug")
-        os.popen("adb shell dumpsys battery set status 1")
+    # 恢复手机默认usb连接状态
+    def reset_usb_status(self):
+        os.popen('adb shell dumpsys battery reset')
+        if self.check_usb_status() != 'true':
+            print('恢复usb充电状态失败')
 
-    def rec_usb(self):
-        print('测试结束')
-        os.popen("adb shell dumpsys batterystats set status 2")
-        os.popen("adb shell dumpsys battery reset")
+    def get_app_uid(self):
+        """根据app包名获取其uid号"""
+        content = os.popen('adb shell pm dump ' + Config().get_config()['pck_name'] + ' | findstr "u0a"').read()
+        uid = content.split()[-1].replace(':', '')
+        print('%s的uid为：%s' % (Config().get_config()['pck_name'], uid))
+        return uid
 
+    # 获取设置usb连接状态和恢复usb默认连接状态期间的应用耗电量数据
     def get_batteryinfo(self):
-        content = os.popen("adb shell dumpsys batterystats|findstr " + self.get_uid()).read()
-        a = re.search(r'(Uid.+)\(\s(.+)\).+', content)
-        try:
-            batteryinfo = a.group(2)
-        except AttributeError:
-            batteryinfo = "无数据"
-            print("无数据")
-        return batteryinfo
-        print("获取测试数据")
-
-    def stop_app(self):
-        print('退出被测应用')
-        os.popen("adb shell am force-stop " + self.pckName)
+        uid = BatteryTest.get_app_uid()
+        content = os.popen('adb shell dumpsys batterystats|findstr "Uid"|findstr ' + uid).readlines()
+        # android8.0
+        # batteryinfo = (str(re.findall('(?<=[(])[^()]+\.[^()]+(?=[)])', content)).replace('[', '')).replace(']', '')
+        for i in content[:int(len(content) / 2)]:
+            batteryinfo = i.replace('Uid ' + uid + ': ', '').strip()
+            print('消耗电量%0.2f' % float(batteryinfo))
+            return round(float(batteryinfo), 2)
 
 
-class Go(App):
-    def __init__(self, app):
-        self.app = app
-        self.file = open("d:/BatteryResult.xlsx", "a")
-
-    def run(self):
-        time.sleep(2)
-        self.app.start_app()
-        time.sleep(3)
-        self.app.get_uid()
-        time.sleep(2)
-        self.app.reset_battery()
-        time.sleep(2)
-        self.app.set_usb()
-        time.sleep(60)
-        self.app.rec_usb()
-        time.sleep(2)
-        self.app.get_batteryinfo()
-        time.sleep(2)
-        self.file.write(self.app.get_batteryinfo() + '\n')
-        time.sleep(2)
-        self.app.stop_app()
-        time.sleep(1)
-        self.file.close()
-
-
-if __name__ == "__main__":
-    Go(app).run()
+if __name__=='__main__':
+    battery = BatteryTest()

@@ -12,6 +12,15 @@ def get_mem():
     '''查询多个进程的内存值'''
     j = 1
     i = 1
+    # 判断应用进程是否存在
+    try:
+        content = os.popen("adb shell ps| findstr -e " + Config().get_config()['pck_name']).read()
+        pid = content.split()[1]
+    except IndexError as e:
+        print('测试应用的进程不存在,正在开启应用···')
+        # 如果不需要自动启动，可以把下面这行命令注释掉
+        os.popen('adb shell am start -W ' + Config().get_config()['pck_name']
+                 + '/' + Config().get_config()['activity'])
     # 抓取log
     os.popen('adb logcat -c')
     os.popen('adb logcat -v threadtime > ' + GetPath.mem_process + '\\' + path + '.log')

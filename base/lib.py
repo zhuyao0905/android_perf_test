@@ -10,12 +10,27 @@ def get_code(a, b):
             return p2[0]
     return ''
 
-def get_mem():
-    mem = os.popen("adb shell dumpsys meminfo " + Config().get_config()['pck_name']).read()
-    Total = get_code(mem, "TOTAL:")
-    print(Total)
 
-def get_cpu():
-    cpu = os.popen("adb shell dumpsys cpuinfo " + Config().get_config()['pck_name']).read()
+def check_adb_connect(self):
+    """查看USB连接状态"""
+    text = os.popen('adb devices').readlines()
+    if 'device' in text[1]:
+        print('USB连接正常')
+        return True
+    else:
+        print('USB未连接')
+        return False
 
-get_mem()
+def get_phone_ip(self):
+    # 获取安卓手机的ip地址
+    data = os.popen('adb shell netcfg').readlines()
+    for i in data:
+        if 'wlan0' in i:
+            ip = i.split()[2].split('/')[0]
+            print(ip)
+            return ip
+
+def app_start(self):
+    """启动app"""
+    os.popen('adb shell am start ' + self.get_app_launch_activity())
+

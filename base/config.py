@@ -15,9 +15,24 @@ class Config:
         else:
             raise FileNotFoundError('文件不存在！')
 
+def check_dir(c_dir):
+    # 检测测试数据目录是否存在
+    BASE_PATH = os.path.split(os.path.dirname(os.path.abspath(__file__)))[0]
+    if not os.path.exists(BASE_PATH + c_dir):
+        os.makedirs(BASE_PATH + c_dir)
+
 class GetPath:
     # 读取测试数据地址
     BASE_PATH = os.path.split(os.path.dirname(os.path.abspath(__file__)))[0]
+    check_dir('\\result\\cpu_info')
+    check_dir('\\result\\cpu_process')
+    check_dir('\\result\\mem_process')
+    check_dir('\\result\\mem_back')
+    check_dir('\\result\\mem_info')
+    check_dir('\\result\\start')
+    check_dir('\\result\\flow')
+    check_dir('\\result\\monkey')
+
     flow = os.path.join(BASE_PATH, 'result', 'flow')
     mem_info = os.path.join(BASE_PATH, 'result', 'mem_info')
     mem_process = os.path.join(BASE_PATH, 'result', 'mem_process')
